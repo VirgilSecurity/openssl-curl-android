@@ -7,16 +7,27 @@ function build_curl() {
     export TARGET_HOST=${1}
     local BUILD_DIR=${2}
 
+    if [ $TARGET_HOST == "armv7a-linux-androideabi" ]; then
+        TOOLS_PREFIX=arm-linux-androideabi
+    else
+        TOOLS_PREFIX=$TARGET_HOST
+    fi
+
+    if [ $TARGET_HOST == "x86_64-linux-android" ]; then
+        export SSL_DIR=$PWD/../openssl/build/android-x86_64
+    else
+        export SSL_DIR=$PWD/../openssl/build/${BUILD_DIR}
+    fi
+
     export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/$HOST_TAG
     PATH=$TOOLCHAIN/bin:$PATH
-    export AR=$TOOLCHAIN/bin/$TARGET_HOST-ar
-    export AS=$TOOLCHAIN/bin/$TARGET_HOST-as
+    export AR=$TOOLCHAIN/bin/$TOOLS_PREFIX-ar
+    export AS=$TOOLCHAIN/bin/$TOOLS_PREFIX-as
     export CC=$TOOLCHAIN/bin/$TARGET_HOST$MIN_SDK_VERSION-clang
     export CXX=$TOOLCHAIN/bin/$TARGET_HOST$MIN_SDK_VERSION-clang++
     export LD=$TOOLCHAIN/bin/$TARGET_HOST-ld
-    export RANLIB=$TOOLCHAIN/bin/$TARGET_HOST-ranlib
-    export STRIP=$TOOLCHAIN/bin/$TARGET_HOST-strip
-    export SSL_DIR=$PWD/../openssl/build/${BUILD_DIR}
+    export RANLIB=$TOOLCHAIN/bin/$TOOLS_PREFIX-ranlib
+    export STRIP=$TOOLCHAIN/bin/$TOOLS_PREFIX-strip
 
     make clean
 

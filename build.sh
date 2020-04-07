@@ -37,4 +37,4 @@ chmod +x ./build-openssl.sh
 chmod +x ./build-curl.sh
 
 ${SCRIPT_FOLDER}/build-openssl.sh
-${SCRIPT_FOLDER/build-curl.sh
+${SCRIPT_FOLDER}/build-curl.sh
