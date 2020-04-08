@@ -22,11 +22,7 @@ function build_curl() {
         TOOLS_PREFIX=$TARGET_HOST
     fi
 
-    if [ $TARGET_HOST == "x86_64-linux-android" ]; then
-        export SSL_DIR=$PWD/../openssl/build/android-x86_64
-    else
-        export SSL_DIR=$PWD/../openssl/build/${BUILD_DIR}
-    fi
+    local PRFIX_DIR=${INSTALL_DIR_BASE}/android.${BUILD_DIR}/release/installed/usr/local
 
     export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/$HOST_TAG
     PATH=$TOOLCHAIN/bin:$PATH
@@ -42,8 +38,8 @@ function build_curl() {
 
     ./configure --host=$TARGET_HOST \
             --target=$TARGET_HOST \
-            --prefix=$PWD/build/${BUILD_DIR} \
-            --with-ssl=$SSL_DIR \
+            --prefix=${PRFIX_DIR} \
+            --with-ssl=${PRFIX_DIR} \
             --with-ca-bundle=$CA_FILE \
             --disable-shared \
             --disable-verbose \
@@ -81,12 +77,6 @@ function build_curl() {
 
     make install
     check_error
-
-    mkdir -p ../build/curl/${BUILD_DIR}
-    check_error
-
-    cp -R $PWD/build/${BUILD_DIR} ../build/curl/
-    check_error
 }
 
 #***************************************************************************************
@@ -120,8 +110,8 @@ pushd ${SCRIPT_FOLDER}/curl
     check_error
 
     # x64
-    build_curl x86_64-linux-android x86_64
-    check_error
+    #build_curl x86_64-linux-android x86_64
+    #check_error
 
 popd
 

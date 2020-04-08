@@ -17,12 +17,13 @@ function build_openssl() {
     export TARGET_HOST=${1}
     local CONF_TARGET=${2}
     local BUILD_DIR=${3}
+    local PRFIX_DIR=${INSTALL_DIR_BASE}/android.${BUILD_DIR}/release/installed/usr/local
 
     make clean
 
     ./Configure ${CONF_TARGET} shared \
     -D__ANDROID_API__=$MIN_SDK_VERSION \
-    --prefix=$PWD/build/${BUILD_DIR}
+    --prefix=${PRFIX_DIR}
     check_error
 
     make -j4
@@ -31,17 +32,13 @@ function build_openssl() {
     make install_sw
     check_error
 
-    mkdir -p ../build/openssl/${BUILD_DIR}
-    check_error
+    pushd ${PRFIX_DIR}/lib
+        cp libcrypto.so.1.1 libcrypto_1_1.so
+        check_error
 
-    cp $PWD/build/${BUILD_DIR}/lib/libcrypto.so.1.1 $PWD/build/${BUILD_DIR}/lib/libcrypto_1_1.so
-    check_error
-
-    cp $PWD/build/${BUILD_DIR}/lib/libssl.so.1.1 $PWD/build/${BUILD_DIR}/lib/libssl_1_1.so
-    check_error
-
-    cp -R $PWD/build/${BUILD_DIR} ../build/openssl/
-    check_error
+        cp libssl.so.1.1 libssl_1_1.so
+        check_error
+    popd
 }
 
 #***************************************************************************************
@@ -73,7 +70,7 @@ pushd ${SCRIPT_FOLDER}/openssl
     check_error
 
     # x64
-    build_openssl x86_64-linux-android android-x86_64 android-x86_64
-    check_error
+    #build_openssl x86_64-linux-android android-x86_64 android-x86_64
+    #check_error
 
 popd
