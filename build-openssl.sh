@@ -1,7 +1,18 @@
 #!/bin/bash
 
+#
+#   Global variables
+#
 SCRIPT_FOLDER="$( cd "$( dirname "$0" )" && pwd )"
+export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/$HOST_TAG
+PATH=$TOOLCHAIN/bin:$PATH
 
+#
+#   Includes
+#
+source ${SCRIPT_FOLDER}/ish/error.ish
+
+#***************************************************************************************
 function build_openssl() {
     export TARGET_HOST=${1}
     local CONF_TARGET=${2}
@@ -12,36 +23,57 @@ function build_openssl() {
     ./Configure ${CONF_TARGET} shared \
     -D__ANDROID_API__=$MIN_SDK_VERSION \
     --prefix=$PWD/build/${BUILD_DIR}
+    check_error
 
     make -j4
+    check_error
+
     make install_sw
+    check_error
+
     mkdir -p ../build/openssl/${BUILD_DIR}
+    check_error
+
     cp $PWD/build/${BUILD_DIR}/lib/libcrypto.so.1.1 $PWD/build/${BUILD_DIR}/lib/libcrypto_1_1.so
+    check_error
+
     cp $PWD/build/${BUILD_DIR}/lib/libssl.so.1.1 $PWD/build/${BUILD_DIR}/lib/libssl_1_1.so
+    check_error
+
     cp -R $PWD/build/${BUILD_DIR} ../build/openssl/
+    check_error
 }
 
+#***************************************************************************************
+#
+#   Prepare artifacts folder
+#
 OPENSSL_DIR="${SCRIPT_FOLDER}/build/openssl"
 if [ -d ${OPENSSL_DIR} ]; then
     rm -rf OPENSSL_DIR
 fi
 mkdir -p ${OPENSSL_DIR}
+check_error
 
-export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/$HOST_TAG
-PATH=$TOOLCHAIN/bin:$PATH
-
+#
+#   Buils for all architectures
+#
 pushd ${SCRIPT_FOLDER}/openssl
 
     # arm64
     build_openssl aarch64-linux-android android-arm64 arm64-v8a
+    check_error
 
     # arm
     build_openssl armv7a-linux-androideabi android-arm armeabi-v7a
+    check_error
 
     # x86
     build_openssl i686-linux-android android-x86 x86
+    check_error
 
     # x64
     build_openssl x86_64-linux-android android-x86_64 android-x86_64
+    check_error
 
 popd

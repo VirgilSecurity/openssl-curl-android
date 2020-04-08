@@ -1,8 +1,17 @@
 #!/bin/bash
 
+#
+#   Global variables
+#
 SCRIPT_FOLDER="$( cd "$( dirname "$0" )" && pwd )"
 export CA_FILE=/data/user/0/${APP_ID}/files/cert.pem
 
+#
+#   Includes
+#
+source ${SCRIPT_FOLDER}/ish/error.ish
+
+#***************************************************************************************
 function build_curl() {
     export TARGET_HOST=${1}
     local BUILD_DIR=${2}
@@ -65,34 +74,55 @@ function build_curl() {
             --disable-smtps \
             --disable-telnet \
             --disable-tftp
+    check_error
 
     make -j4
-    make install
-    mkdir -p ../build/curl/${BUILD_DIR}
-    cp -R $PWD/build/${BUILD_DIR} ../build/curl/
+    check_error
 
+    make install
+    check_error
+
+    mkdir -p ../build/curl/${BUILD_DIR}
+    check_error
+
+    cp -R $PWD/build/${BUILD_DIR} ../build/curl/
+    check_error
 }
 
+#***************************************************************************************
+#
+#   Prepare artifacts folder
+#
 OPENSSL_DIR="${SCRIPT_FOLDER}/build/curl"
 if [ -d ${OPENSSL_DIR} ]; then
     rm -rf OPENSSL_DIR
 fi
 mkdir -p ${OPENSSL_DIR}
+check_error
 
-
+#
+#   Buils for all architectures
+#
 pushd ${SCRIPT_FOLDER}/curl
     ./buildconf
+    check_error
 
     # arm64
     build_curl aarch64-linux-android arm64-v8a
+    check_error
 
     # arm
     build_curl armv7a-linux-androideabi armeabi-v7a
+    check_error
 
     # x86
     build_curl i686-linux-android x86
+    check_error
 
     # x64
     build_curl x86_64-linux-android x86_64
+    check_error
 
 popd
+
+#***************************************************************************************
