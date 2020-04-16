@@ -18,26 +18,26 @@ function build_openssl() {
     local CONF_TARGET=${2}
     local BUILD_DIR=${3}
     local PRFIX_DIR=${INSTALL_DIR_BASE}/android.${BUILD_DIR}/release/installed/usr/local
-
+    
     make clean
-
+    
     ./Configure ${CONF_TARGET} shared \
     -D__ANDROID_API__=$MIN_SDK_VERSION \
     --prefix=${PRFIX_DIR}
     check_error
-
-    make -j4
+    
+    make -j10
     check_error
-
+    
     make install_sw
     check_error
-
+    
     pushd ${PRFIX_DIR}/lib
-        cp libcrypto.so.1.1 libcrypto_1_1.so
-        check_error
-
-        cp libssl.so.1.1 libssl_1_1.so
-        check_error
+    cp libcrypto.so.1.1 libcrypto_1_1.so
+    check_error
+    
+    cp libssl.so.1.1 libssl_1_1.so
+    check_error
     popd
 }
 
@@ -57,20 +57,20 @@ check_error
 #
 pushd ${SCRIPT_FOLDER}/openssl
 
-    # arm64
-    build_openssl aarch64-linux-android android-arm64 arm64-v8a
-    check_error
+# arm64
+build_openssl aarch64-linux-android android-arm64 arm64-v8a
+check_error
 
-    # arm
-    build_openssl armv7a-linux-androideabi android-arm armeabi-v7a
-    check_error
+# arm
+build_openssl armv7a-linux-androideabi android-arm armeabi-v7a
+check_error
 
-    # x86
-    build_openssl i686-linux-android android-x86 x86
-    check_error
+# x86
+build_openssl i686-linux-android android-x86 x86
+check_error
 
-    # x64
-    #build_openssl x86_64-linux-android android-x86_64 android-x86_64
-    #check_error
+# x64
+#build_openssl x86_64-linux-android android-x86_64 android-x86_64
+#check_error
 
 popd
