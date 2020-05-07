@@ -26,7 +26,7 @@ check_xcode() {
     echo "You have to install Xcode and the command line tools first"
     exit 1
   fi
-  export CC="$XCODE/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
+  # export CC="$XCODE/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
 }
 
 #********************************************************************************************
