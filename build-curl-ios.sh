@@ -2,7 +2,7 @@
 
 #********************************************************************************************
 realpath() {
-    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+  [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
 }
 
 #********************************************************************************************
@@ -21,27 +21,27 @@ DESTDIR="${SCRIPTPATH}/build"
 
 #********************************************************************************************
 check_xcode() {
-   XCODE=$(xcode-select -p)
-   if [ ! -d "$XCODE" ]; then
-   	echo "You have to install Xcode and the command line tools first"
-   	exit 1
-   fi
-   export CC="$XCODE/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
+  XCODE=$(xcode-select -p)
+  if [ ! -d "$XCODE" ]; then
+    echo "You have to install Xcode and the command line tools first"
+    exit 1
+  fi
+  export CC="$XCODE/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
 }
 
 #********************************************************************************************
-create_build_dir(){
-   [ "${DESTDIR}" != "/" ] && rm -rf ${DESTDIR}
-   mkdir -p ${DESTDIR}
+create_build_dir() {
+  [ "${DESTDIR}" != "/" ] && rm -rf ${DESTDIR}
+  mkdir -p ${DESTDIR}
 }
 #********************************************************************************************
 curl_create_config() {
   pushd ${CURLPATH}
-     if [ ! -x "configure" ]; then
-        echo "=== Ececuting buildconf"
-     	./buildconf
-     	check_error
-     fi
+  if [ ! -x "configure" ]; then
+    echo "=== Ececuting buildconf"
+    ./buildconf
+    check_error
+  fi
 }
 
 #********************************************************************************************
@@ -51,10 +51,10 @@ curl_build_ios() {
   local CURL_PLATFORM="${3}"
   local CURL_SDK="${4}"
   local CURL_SHARED="${5}"
-  
+
   echo "#====  Buildung Curl  ====="
   echo "# ARCH     = [$CURL_ARCH]"
-  echo "# HOST     = [$CURL_HOST]"  
+  echo "# HOST     = [$CURL_HOST]"
   echo "# PLATFORM = [$CURL_PLATFORM]"
   echo "# SDK      = [$CURL_SDK]"
   echo "# SHARED   = [$CURL_SHARED]"
@@ -64,36 +64,36 @@ curl_build_ios() {
   export LDFLAGS="-arch $CURL_ARCH -isysroot $XCODE/Platforms/${CURL_PLATFORM}.platform/Developer/SDKs/${CURL_SDK}.sdk"
   [ "${CURL_PLATFORM}" = "iPhoneSimulator" ] && export CPPFLAGS="-D__IPHONE_OS_VERSION_MIN_REQUIRED=${IPHONEOS_DEPLOYMENT_TARGET%%.*}0000"
   pushd "${CURLPATH}"
-        if [ -z "${CURL_SHARED}" ]; then
-          CURL_LIB_TYPE="--enable-static --disable-shared"
-          CURL_LIB_EXT="a"
-        else
-          CURL_LIB_TYPE="--disable-static --enable-shared"
-          CURL_LIB_EXT="dylib"          
-        fi
-        echo "=== Run configuring tool"
-	./configure --host="${CURL_HOST}-apple-darwin" --with-darwinssl ${CURL_LIB_TYPE} --enable-threaded-resolver --disable-verbose --enable-ipv6 ${CUL_WITHOUT}
-	check_error
+  if [ -z "${CURL_SHARED}" ]; then
+    CURL_LIB_TYPE="--enable-static --disable-shared"
+    CURL_LIB_EXT="a"
+  else
+    CURL_LIB_TYPE="--disable-static --enable-shared"
+    CURL_LIB_EXT="dylib"
+  fi
+  echo "=== Run configuring tool"
+  ./configure --host="${CURL_HOST}-apple-darwin" --with-darwinssl ${CURL_LIB_TYPE} --enable-threaded-resolver --disable-verbose --enable-ipv6 ${CUL_WITHOUT}
+  check_error
 
-        echo "=== Run make"
-	make -j $(sysctl -n hw.logicalcpu_max)
-	check_error
+  echo "=== Run make"
+  make -j $(sysctl -n hw.logicalcpu_max)
+  check_error
 
-	cp "$CURLPATH/lib/.libs/libcurl.${CURL_LIB_EXT}" "$DESTDIR/libcurl-${CURL_ARCH}.${CURL_LIB_EXT}"
-	make clean
+  cp "$CURLPATH/lib/.libs/libcurl.${CURL_LIB_EXT}" "$DESTDIR/libcurl-${CURL_ARCH}.${CURL_LIB_EXT}"
+  make clean
   popd
 }
 
 #********************************************************************************************
 aggregate_lib() {
   pushd ${DESTDIR}
-    echo "=== Packing multiarch library"
-    lipo -create -output libcurl.${CURL_LIB_EXT} libcurl-*.${CURL_LIB_EXT}
-    rm libcurl-*.${CURL_LIB_EXT}
+  echo "=== Packing multiarch library"
+  lipo -create -output libcurl.${CURL_LIB_EXT} libcurl-*.${CURL_LIB_EXT}
+  rm libcurl-*.${CURL_LIB_EXT}
   popd
 }
 #********************************************************************************************
-copy_headers(){
+copy_headers() {
   #Copying cURL headers
   echo "=== Copy headers"
   if [ -d "$DESTDIR/include" ]; then
@@ -102,13 +102,13 @@ copy_headers(){
   cp -R "$CURLPATH/include" "$DESTDIR/"
   rm "$DESTDIR/include/curl/.gitignore"
   [ "${DESTDIR}" != "/" ] && find ${DESTDIR} -type f -name "Makefile*" -delete
-  [ "${DESTDIR}" != "/" ] && find ${DESTDIR} -type f -name "README" -delete  
+  [ "${DESTDIR}" != "/" ] && find ${DESTDIR} -type f -name "README" -delete
 }
 
 #********************************************************************************************
-install_to_dest(){
+install_to_dest() {
   if [ ! -z "$INSTALL_DIR_BASE" ]; then
-    echo "=== Installing to ["${INSTALL_DIR_BASE"}]"
+    echo "=== Installing to [${INSTALL_DIR_BASE}]"
     mkdir -p ${INSTALL_DIR_BASE}/ios/release/installed/usr/local/lib
     mkdir -p ${INSTALL_DIR_BASE}/ios/release/installed/usr/local/include
     cp -fr ${DESTDIR}/include/* ${INSTALL_DIR_BASE}/ios/release/installed/usr/local/include/
@@ -122,17 +122,17 @@ create_build_dir
 curl_create_config
 
 # Build static libraryes
-curl_build_ios armv7   armv7  iPhoneOS        iPhoneOS
-curl_build_ios armv7s  armv7s iPhoneOS        iPhoneOS
-curl_build_ios arm64   arm    iPhoneOS        iPhoneOS
-curl_build_ios x86_64  x86_64 iPhoneSimulator iPhoneSimulator
+curl_build_ios armv7 armv7 iPhoneOS iPhoneOS
+curl_build_ios armv7s armv7s iPhoneOS iPhoneOS
+curl_build_ios arm64 arm iPhoneOS iPhoneOS
+curl_build_ios x86_64 x86_64 iPhoneSimulator iPhoneSimulator
 aggregate_lib
 
 # Build dynamic libraryes
-curl_build_ios armv7   armv7  iPhoneOS        iPhoneOS         1
-curl_build_ios armv7s  armv7s iPhoneOS        iPhoneOS         1
-curl_build_ios arm64   arm    iPhoneOS        iPhoneOS         1
-curl_build_ios x86_64  x86_64 iPhoneSimulator iPhoneSimulator  1
+curl_build_ios armv7 armv7 iPhoneOS iPhoneOS 1
+curl_build_ios armv7s armv7s iPhoneOS iPhoneOS 1
+curl_build_ios arm64 arm iPhoneOS iPhoneOS 1
+curl_build_ios x86_64 x86_64 iPhoneSimulator iPhoneSimulator 1
 aggregate_lib
 copy_headers
 install_to_dest
