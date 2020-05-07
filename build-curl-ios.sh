@@ -108,7 +108,7 @@ copy_headers(){
 #********************************************************************************************
 install_to_dest(){
   if [ ! -z "$INSTALL_DIR_BASE" ]; then
-    echo "=== Installing to [${INSTALL_DIR_BASE"}]"
+    echo "=== Installing to ["${INSTALL_DIR_BASE"}]"
     mkdir -p ${INSTALL_DIR_BASE}/ios/release/installed/usr/local/lib
     mkdir -p ${INSTALL_DIR_BASE}/ios/release/installed/usr/local/include
     cp -fr ${DESTDIR}/include/* ${INSTALL_DIR_BASE}/ios/release/installed/usr/local/include/
