@@ -108,11 +108,17 @@ copy_headers() {
 #********************************************************************************************
 install_to_dest() {
   if [ ! -z "$INSTALL_DIR_BASE" ]; then
-    echo "=== Installing to [${INSTALL_DIR_BASE}]"
+    echo "=== Installing iOS to [${INSTALL_DIR_BASE}]"
     mkdir -p ${INSTALL_DIR_BASE}/ios/release/installed/usr/local/lib
     mkdir -p ${INSTALL_DIR_BASE}/ios/release/installed/usr/local/include
     cp -fr ${DESTDIR}/include/* ${INSTALL_DIR_BASE}/ios/release/installed/usr/local/include/
     cp -r ${DESTDIR}/libcurl.* ${INSTALL_DIR_BASE}/ios/release/installed/usr/local/lib/
+
+    echo "=== Installing iOS Simulator to [${INSTALL_DIR_BASE}]"
+    mkdir -p ${INSTALL_DIR_BASE}/ios-sim/release/installed/usr/local/lib
+    mkdir -p ${INSTALL_DIR_BASE}/ios-sim/release/installed/usr/local/include
+    cp -fr ${DESTDIR}/include/* ${INSTALL_DIR_BASE}/ios-sim/release/installed/usr/local/include/
+    cp -r ${DESTDIR}/libcurl.* ${INSTALL_DIR_BASE}/ios-sim/release/installed/usr/local/lib/
   fi
 }
 
