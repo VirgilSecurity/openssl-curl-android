@@ -19,6 +19,14 @@ CUL_WITHOUT="--disable-verbose --disable-manual --disable-crypto-auth --disable-
              --disable-pop3s --disable-smb --disable-smbs --disable-smtp --disable-smtps --disable-telnet --disable-tftp"
 DESTDIR="${SCRIPTPATH}/build"
 
+if [ "${1}" == "sim" ]; then
+  echo "=== Build for iOS simulator"
+  IS_SIMULATOR=TRUE
+else
+  echo "=== Build for iOS devices"
+  IS_SIMULATOR=FALSE
+fi
+
 #********************************************************************************************
 check_xcode() {
   XCODE=$(xcode-select -p)
@@ -34,6 +42,7 @@ create_build_dir() {
   [ "${DESTDIR}" != "/" ] && rm -rf ${DESTDIR}
   mkdir -p ${DESTDIR}
 }
+
 #********************************************************************************************
 curl_create_config() {
   pushd ${CURLPATH}
@@ -108,17 +117,16 @@ copy_headers() {
 #********************************************************************************************
 install_to_dest() {
   if [ ! -z "$INSTALL_DIR_BASE" ]; then
-    echo "=== Installing iOS to [${INSTALL_DIR_BASE}]"
-    mkdir -p ${INSTALL_DIR_BASE}/ios/release/installed/usr/local/lib
-    mkdir -p ${INSTALL_DIR_BASE}/ios/release/installed/usr/local/include
-    cp -fr ${DESTDIR}/include/* ${INSTALL_DIR_BASE}/ios/release/installed/usr/local/include/
-    cp -r ${DESTDIR}/libcurl.* ${INSTALL_DIR_BASE}/ios/release/installed/usr/local/lib/
-
-    echo "=== Installing iOS Simulator to [${INSTALL_DIR_BASE}]"
-    mkdir -p ${INSTALL_DIR_BASE}/ios-sim/release/installed/usr/local/lib
-    mkdir -p ${INSTALL_DIR_BASE}/ios-sim/release/installed/usr/local/include
-    cp -fr ${DESTDIR}/include/* ${INSTALL_DIR_BASE}/ios-sim/release/installed/usr/local/include/
-    cp -r ${DESTDIR}/libcurl.* ${INSTALL_DIR_BASE}/ios-sim/release/installed/usr/local/lib/
+    if [ "$IS_SIMULATOR" == "FALSE" ]; then
+      DST_BASE_DIR="${INSTALL_DIR_BASE}/ios/release/installed/usr/local"
+    else
+      DST_BASE_DIR="${INSTALL_DIR_BASE}/ios-sim/release/installed/usr/local"
+    fi
+    echo "=== Installing iOS to [${DST_BASE_DIR}]"
+    mkdir -p ${DST_BASE_DIR}/lib
+    mkdir -p ${DST_BASE_DIR}/include
+    cp -fr ${DESTDIR}/include/* ${DST_BASE_DIR}/include/
+    cp -r ${DESTDIR}/libcurl.* ${DST_BASE_DIR}/lib/
   fi
 }
 
@@ -128,18 +136,25 @@ create_build_dir
 curl_create_config
 
 # Build static libraryes
-curl_build_ios armv7 armv7 iPhoneOS iPhoneOS
-curl_build_ios armv7s armv7s iPhoneOS iPhoneOS
-curl_build_ios arm64 arm iPhoneOS iPhoneOS
-curl_build_ios x86_64 x86_64 iPhoneSimulator iPhoneSimulator
-aggregate_lib
+if [ "$IS_SIMULATOR" == "FALSE" ]; then
+  curl_build_ios armv7 armv7 iPhoneOS iPhoneOS
+  curl_build_ios armv7s armv7s iPhoneOS iPhoneOS
+  curl_build_ios arm64 arm iPhoneOS iPhoneOS
+  aggregate_lib
+else
+  curl_build_ios x86_64 x86_64 iPhoneSimulator iPhoneSimulator
+fi
 
 # Build dynamic libraryes
-curl_build_ios armv7 armv7 iPhoneOS iPhoneOS 1
-curl_build_ios armv7s armv7s iPhoneOS iPhoneOS 1
-curl_build_ios arm64 arm iPhoneOS iPhoneOS 1
-curl_build_ios x86_64 x86_64 iPhoneSimulator iPhoneSimulator 1
-aggregate_lib
+if [ "$IS_SIMULATOR" == "FALSE" ]; then
+  curl_build_ios armv7 armv7 iPhoneOS iPhoneOS 1
+  curl_build_ios armv7s armv7s iPhoneOS iPhoneOS 1
+  curl_build_ios arm64 arm iPhoneOS iPhoneOS 1
+  aggregate_lib
+else
+  curl_build_ios x86_64 x86_64 iPhoneSimulator iPhoneSimulator 1
+fi
+
 copy_headers
 install_to_dest
 #********************************************************************************************
