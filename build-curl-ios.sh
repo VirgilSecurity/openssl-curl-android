@@ -119,14 +119,17 @@ install_to_dest() {
   if [ ! -z "$INSTALL_DIR_BASE" ]; then
     if [ "$IS_SIMULATOR" == "FALSE" ]; then
       DST_BASE_DIR="${INSTALL_DIR_BASE}/ios/release/installed/usr/local"
+      LIB_SUFFIX=""
     else
       DST_BASE_DIR="${INSTALL_DIR_BASE}/ios-sim/release/installed/usr/local"
+      LIB_SUFFIX="-x86_64"
     fi
     echo "=== Installing iOS to [${DST_BASE_DIR}]"
     mkdir -p ${DST_BASE_DIR}/lib
     mkdir -p ${DST_BASE_DIR}/include
     cp -fr ${DESTDIR}/include/* ${DST_BASE_DIR}/include/
-    cp -r ${DESTDIR}/libcurl.* ${DST_BASE_DIR}/lib/
+    cp -r ${DESTDIR}/libcurl${LIB_SUFFIX}.a ${DST_BASE_DIR}/lib/
+    # cp -r ${DESTDIR}/libcurl${LIB_SUFFIX}.dylib ${DST_BASE_DIR}/lib/
   fi
 }
 
