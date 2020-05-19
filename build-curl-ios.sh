@@ -128,8 +128,7 @@ install_to_dest() {
     mkdir -p ${DST_BASE_DIR}/lib
     mkdir -p ${DST_BASE_DIR}/include
     cp -fr ${DESTDIR}/include/* ${DST_BASE_DIR}/include/
-    cp -r ${DESTDIR}/libcurl${LIB_SUFFIX}.a ${DST_BASE_DIR}/lib/
-    # cp -r ${DESTDIR}/libcurl${LIB_SUFFIX}.dylib ${DST_BASE_DIR}/lib/
+    cp -r ${DESTDIR}/libcurl${LIB_SUFFIX}.a ${DST_BASE_DIR}/lib/libcurl.a
   fi
 }
 
@@ -147,16 +146,6 @@ if [ "$IS_SIMULATOR" == "FALSE" ]; then
 else
   curl_build_ios x86_64 x86_64 iPhoneSimulator iPhoneSimulator
 fi
-
-# Build dynamic libraryes
-# if [ "$IS_SIMULATOR" == "FALSE" ]; then
-#   curl_build_ios armv7 armv7 iPhoneOS iPhoneOS 1
-#   curl_build_ios armv7s armv7s iPhoneOS iPhoneOS 1
-#   curl_build_ios arm64 arm iPhoneOS iPhoneOS 1
-#   aggregate_lib
-# else
-#   curl_build_ios x86_64 x86_64 iPhoneSimulator iPhoneSimulator 1
-# fi
 
 copy_headers
 install_to_dest
