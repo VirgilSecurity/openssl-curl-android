@@ -56,12 +56,23 @@ chmod +x ./build-curl.sh
 #
 #   Build OpenSSL library
 #
+echo "===== Build OpenSSL with debug mode"
+${SCRIPT_FOLDER}/build-openssl.sh debug
+check_error
+
+echo "===== Build OpenSSL with release mode"
 ${SCRIPT_FOLDER}/build-openssl.sh
 check_error
 
 #
 #   Build CURL library
 #
+
+echo "===== Build curl with debug mode"
+${SCRIPT_FOLDER}/build-curl.sh debug
+check_error
+
+echo "===== Build curl with release mode"
 ${SCRIPT_FOLDER}/build-curl.sh
 check_error
 

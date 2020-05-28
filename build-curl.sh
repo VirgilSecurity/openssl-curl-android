@@ -5,7 +5,7 @@
 #
 SCRIPT_FOLDER="$( cd "$( dirname "$0" )" && pwd )"
 export CA_FILE=/data/user/0/${APP_ID}/files/cert.pem
-
+BUILD_TYPE="${1:-release}"
 #
 #   Includes
 #
@@ -15,6 +15,10 @@ source ${SCRIPT_FOLDER}/ish/error.ish
 function build_curl() {
     export TARGET_HOST=${1}
     local BUILD_DIR=${2}
+    local BUILD_TYPE="${3:-release}"
+    local DEBUG_PARAM="--disable-debug"
+    
+    [ "${BUILD_TYPE}" == "debug" ] && DEBUG_PARAM="--enable-debug"
     
     if [ $TARGET_HOST == "armv7a-linux-androideabi" ]; then
         TOOLS_PREFIX=arm-linux-androideabi
@@ -22,7 +26,7 @@ function build_curl() {
         TOOLS_PREFIX=$TARGET_HOST
     fi
     
-    local PRFIX_DIR=${INSTALL_DIR_BASE}/android.${BUILD_DIR}/release/installed/usr/local
+    local PRFIX_DIR=${INSTALL_DIR_BASE}/android.${BUILD_DIR}/${BUILD_TYPE}/installed/usr/local
     
     export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/$HOST_TAG
     PATH=$TOOLCHAIN/bin:$PATH
@@ -44,6 +48,7 @@ function build_curl() {
     --disable-shared \
     --disable-verbose \
     --disable-manual \
+    ${DEBUG_PARAM} \
     --disable-crypto-auth \
     --disable-unix-sockets \
     --disable-ares \

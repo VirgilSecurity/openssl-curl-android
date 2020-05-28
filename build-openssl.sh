@@ -6,7 +6,7 @@
 SCRIPT_FOLDER="$( cd "$( dirname "$0" )" && pwd )"
 export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/$HOST_TAG
 PATH=$TOOLCHAIN/bin:$PATH
-
+BUILD_TYPE="${1:-release}"    
 #
 #   Includes
 #
@@ -17,13 +17,19 @@ function build_openssl() {
     export TARGET_HOST=${1}
     local CONF_TARGET=${2}
     local BUILD_DIR=${3}
-    local PRFIX_DIR=${INSTALL_DIR_BASE}/android.${BUILD_DIR}/release/installed/usr/local
+
+    local PRFIX_DIR=${INSTALL_DIR_BASE}/android.${BUILD_DIR}/${BUILD_TYPE}/installed/usr/local
+    local DEBUG_PARAM=" "
+
+    [ "${BUILD_TYPE}" == "dubug" ] && DEBUG_PARAM="--debug"
+
     
     make clean
     
     ./Configure ${CONF_TARGET} shared \
     -D__ANDROID_API__=$MIN_SDK_VERSION \
-    --prefix=${PRFIX_DIR}
+    --prefix=${PRFIX_DIR} \
+    ${DEBUG_PARAM}
     check_error
     
     make -j10
