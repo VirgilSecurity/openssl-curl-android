@@ -15,9 +15,8 @@ source ${SCRIPT_FOLDER}/ish/error.ish
 function build_curl() {
     export TARGET_HOST=${1}
     local BUILD_DIR=${2}
-    local BUILD_TYPE="${3:-release}"
+
     local DEBUG_PARAM="--disable-debug"
-    
     [ "${BUILD_TYPE}" == "debug" ] && DEBUG_PARAM="--enable-debug"
     
     if [ $TARGET_HOST == "armv7a-linux-androideabi" ]; then

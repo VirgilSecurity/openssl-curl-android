@@ -18,11 +18,10 @@ function build_openssl() {
     local CONF_TARGET=${2}
     local BUILD_DIR=${3}
 
-    local PRFIX_DIR=${INSTALL_DIR_BASE}/android.${BUILD_DIR}/${BUILD_TYPE}/installed/usr/local
     local DEBUG_PARAM=" "
-
     [ "${BUILD_TYPE}" == "dubug" ] && DEBUG_PARAM="--debug"
 
+    local PRFIX_DIR=${INSTALL_DIR_BASE}/android.${BUILD_DIR}/${BUILD_TYPE}/installed/usr/local
     
     make clean
     
