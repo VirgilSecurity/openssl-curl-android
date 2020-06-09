@@ -7,6 +7,7 @@ realpath() {
 
 #********************************************************************************************
 # Enviroment  INSTALL_DIR_BASE for installing include and lib
+# Enviroment  BUILD_WITH_DEBUG=(true/false) building libraries with debug and release mode
 INSTALL_DIR_BASE
 REL_SCRIPT_PATH="$(dirname $0)"
 SCRIPTPATH=$(realpath "$REL_SCRIPT_PATH")
@@ -161,7 +162,11 @@ full_build() {
 #********************************************************************************************
 
 check_xcode
+echo "=== Building release libs ==="
 full_build release
-full_build debug
+if [ "${BUILD_WITH_DEBUG}" == "true" ]; then
+   echo "=== Building debug libs ==="
+   full_build debug
+fi   
 
 #********************************************************************************************

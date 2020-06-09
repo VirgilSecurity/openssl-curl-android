@@ -3,8 +3,9 @@
 #
 #   Global variables
 #
-SCRIPT_FOLDER="$( cd "$( dirname "$0" )" && pwd )"
+# Enviroment  BUILD_WITH_DEBUG=(true/false) building libraries with debug and release mode
 
+SCRIPT_FOLDER="$( cd "$( dirname "$0" )" && pwd )"
 #
 #   Includes
 #
@@ -56,9 +57,11 @@ chmod +x ./build-curl.sh
 #
 #   Build OpenSSL library
 #
-echo "===== Build OpenSSL with debug mode"
-${SCRIPT_FOLDER}/build-openssl.sh debug
-check_error
+if [ "${BUILD_WITH_DEBUG}" == "true" ]; then
+   echo "===== Build OpenSSL with debug mode"
+   ${SCRIPT_FOLDER}/build-openssl.sh debug
+   check_error
+fi   
 
 echo "===== Build OpenSSL with release mode"
 ${SCRIPT_FOLDER}/build-openssl.sh
@@ -67,10 +70,11 @@ check_error
 #
 #   Build CURL library
 #
-
-echo "===== Build curl with debug mode"
-${SCRIPT_FOLDER}/build-curl.sh debug
-check_error
+if [ "${BUILD_WITH_DEBUG}" == "true" ]; then
+   echo "===== Build curl with debug mode"
+   ${SCRIPT_FOLDER}/build-curl.sh debug
+   check_error
+fi   
 
 echo "===== Build curl with release mode"
 ${SCRIPT_FOLDER}/build-curl.sh
