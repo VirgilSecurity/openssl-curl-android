@@ -7,12 +7,14 @@ realpath() {
 
 #********************************************************************************************
 # Enviroment  INSTALL_DIR_BASE for installing include and lib
-
+# Enviroment  BUILD_WITH_DEBUG=(true/false) building libraries with debug and release mode
+INSTALL_DIR_BASE
 REL_SCRIPT_PATH="$(dirname $0)"
 SCRIPTPATH=$(realpath "$REL_SCRIPT_PATH")
 CURLPATH="$SCRIPTPATH/curl"
 source ${REL_SCRIPT_PATH}/ish/error.ish
 export IPHONEOS_DEPLOYMENT_TARGET="10"
+INSTALL_DIR_BASE="${INSTALL_DIR_BASE:-$SCRIPTPATH/prebuild}"
 CUL_WITHOUT="--disable-verbose --disable-manual --disable-crypto-auth --disable-unix-sockets --disable-ares --disable-rtsp  --disable-ipv6 \
              --disable-proxy --disable-versioned-symbols --enable-hidden-symbols --without-libidn --without-librtmp --without-zlib \
              --disable-dict --disable-file --disable-ftp --disable-ftps --disable-gopher --disable-imap --disable-imaps --disable-pop3 \
@@ -59,15 +61,20 @@ curl_build_ios() {
   local CURL_HOST="${2}"
   local CURL_PLATFORM="${3}"
   local CURL_SDK="${4}"
-  local CURL_SHARED="${5}"
+  local BUILD_TYPE="${5}"
+  local CURL_SHARED="${6}"  
+  
+  local DEBUG_PARAM="--disable-debug"
+  [ "${BUILD_TYPE}" == "debug" ] && DEBUG_PARAM="--enable-debug"
 
-  echo "#====  Buildung Curl  ====="
-  echo "# ARCH     = [$CURL_ARCH]"
-  echo "# HOST     = [$CURL_HOST]"
-  echo "# PLATFORM = [$CURL_PLATFORM]"
-  echo "# SDK      = [$CURL_SDK]"
-  echo "# SHARED   = [$CURL_SHARED]"
-  echo "#=========================="
+  echo "#=======  Buildung Curl  ========"
+  echo "# ARCH         = [$CURL_ARCH]"
+  echo "# HOST         = [$CURL_HOST]"
+  echo "# PLATFORM     = [$CURL_PLATFORM]"
+  echo "# SDK          = [$CURL_SDK]"
+  echo "# BUILD_TYPE   = [$BUILD_TYPE]"    
+  echo "# SHARED       = [$CURL_SHARED]"
+  echo "#================================"
 
   export CFLAGS="-arch $CURL_ARCH -pipe -Os -gdwarf-2 -isysroot $XCODE/Platforms/${CURL_PLATFORM}.platform/Developer/SDKs/${CURL_SDK}.sdk -miphoneos-version-min=${IPHONEOS_DEPLOYMENT_TARGET} -fembed-bitcode -Werror=partial-availability"
   export LDFLAGS="-arch $CURL_ARCH -isysroot $XCODE/Platforms/${CURL_PLATFORM}.platform/Developer/SDKs/${CURL_SDK}.sdk"
@@ -81,7 +88,7 @@ curl_build_ios() {
     CURL_LIB_EXT="dylib"
   fi
   echo "=== Run configuring tool"
-  ./configure --host="${CURL_HOST}-apple-darwin" --with-darwinssl ${CURL_LIB_TYPE} --enable-threaded-resolver --disable-verbose --enable-ipv6 ${CUL_WITHOUT}
+  ./configure --host="${CURL_HOST}-apple-darwin" --with-darwinssl ${CURL_LIB_TYPE} --enable-threaded-resolver --disable-verbose --enable-ipv6 ${CUL_WITHOUT} ${DEBUG_PARAM}
   check_error
 
   echo "=== Run make"
@@ -116,12 +123,14 @@ copy_headers() {
 
 #********************************************************************************************
 install_to_dest() {
+  local BUILD_TYPE="${1}"
+  
   if [ ! -z "$INSTALL_DIR_BASE" ]; then
     if [ "$IS_SIMULATOR" == "FALSE" ]; then
-      DST_BASE_DIR="${INSTALL_DIR_BASE}/ios/release/installed/usr/local"
+      DST_BASE_DIR="${INSTALL_DIR_BASE}/ios/${BUILD_TYPE}/installed/usr/local"
       LIB_SUFFIX=""
     else
-      DST_BASE_DIR="${INSTALL_DIR_BASE}/ios-sim/release/installed/usr/local"
+      DST_BASE_DIR="${INSTALL_DIR_BASE}/ios-sim/${BUILD_TYPE}/installed/usr/local"
       LIB_SUFFIX="-x86_64"
     fi
     echo "=== Installing iOS to [${DST_BASE_DIR}]"
@@ -133,20 +142,31 @@ install_to_dest() {
 }
 
 #********************************************************************************************
+full_build() {
+  local BUILD_TYPE="${1}"
+  create_build_dir
+  curl_create_config
+
+  # Build static libraryes
+  if [ "$IS_SIMULATOR" == "FALSE" ]; then
+    curl_build_ios armv7 armv7 iPhoneOS iPhoneOS ${BUILD_TYPE}
+    curl_build_ios armv7s armv7s iPhoneOS iPhoneOS ${BUILD_TYPE}
+    curl_build_ios arm64 arm iPhoneOS iPhoneOS ${BUILD_TYPE}
+    aggregate_lib
+  else
+    curl_build_ios x86_64 x86_64 iPhoneSimulator iPhoneSimulator ${BUILD_TYPE}
+  fi
+  copy_headers
+  install_to_dest ${BUILD_TYPE}
+}
+#********************************************************************************************
+
 check_xcode
-create_build_dir
-curl_create_config
+echo "=== Building release libs ==="
+full_build release
+if [ "${BUILD_WITH_DEBUG}" == "true" ]; then
+   echo "=== Building debug libs ==="
+   full_build debug
+fi   
 
-# Build static libraryes
-if [ "$IS_SIMULATOR" == "FALSE" ]; then
-  curl_build_ios armv7 armv7 iPhoneOS iPhoneOS
-  curl_build_ios armv7s armv7s iPhoneOS iPhoneOS
-  curl_build_ios arm64 arm iPhoneOS iPhoneOS
-  aggregate_lib
-else
-  curl_build_ios x86_64 x86_64 iPhoneSimulator iPhoneSimulator
-fi
-
-copy_headers
-install_to_dest
 #********************************************************************************************
