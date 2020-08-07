@@ -37,13 +37,13 @@ function build_openssl() {
     make install_sw
     check_error
     
-    pushd ${PRFIX_DIR}/lib
-    cp libcrypto.so.1.1 libcrypto_1_1.so
-    check_error
-    
-    cp libssl.so.1.1 libssl_1_1.so
-    check_error
-    popd
+#    pushd ${PRFIX_DIR}/lib
+#    cp libcrypto.so.1.1 libcrypto_1_1.so
+#    check_error
+#    
+#    cp libssl.so.1.1 libssl_1_1.so
+#    check_error
+#    popd
 }
 
 #***************************************************************************************
