@@ -75,7 +75,7 @@ build_openssl i686-linux-android android-x86 x86
 check_error
 
 # x64
-#build_openssl x86_64-linux-android android-x86_64 android-x86_64
-#check_error
+build_openssl x86_64-linux-android android-x86_64 android-x86_64
+check_error
 
 popd

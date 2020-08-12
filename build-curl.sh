@@ -114,8 +114,8 @@ build_curl i686-linux-android x86
 check_error
 
 # x64
-#build_curl x86_64-linux-android x86_64
-#check_error
+build_curl x86_64-linux-android x86_64
+check_error
 
 popd
 
