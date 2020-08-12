@@ -101,17 +101,17 @@ pushd ${SCRIPT_FOLDER}/curl
 ./buildconf
 check_error
 
-# # arm64
-# build_curl aarch64-linux-android arm64-v8a
-# check_error
+# arm64
+build_curl aarch64-linux-android arm64-v8a
+check_error
 
-# # arm
-# build_curl armv7a-linux-androideabi armeabi-v7a
-# check_error
+# arm
+build_curl armv7a-linux-androideabi armeabi-v7a
+check_error
 
-# # x86
-# build_curl i686-linux-android x86
-# check_error
+# x86
+build_curl i686-linux-android x86
+check_error
 
 # x64
 build_curl x86_64-linux-android x86_64
