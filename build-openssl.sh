@@ -62,17 +62,17 @@ check_error
 #
 pushd ${SCRIPT_FOLDER}/openssl
 
-# arm64
-build_openssl aarch64-linux-android android-arm64 arm64-v8a
-check_error
+# # arm64
+# build_openssl aarch64-linux-android android-arm64 arm64-v8a
+# check_error
 
-# arm
-build_openssl armv7a-linux-androideabi android-arm armeabi-v7a
-check_error
+# # arm
+# build_openssl armv7a-linux-androideabi android-arm armeabi-v7a
+# check_error
 
-# x86
-build_openssl i686-linux-android android-x86 x86
-check_error
+# # x86
+# build_openssl i686-linux-android android-x86 x86
+# check_error
 
 # x64
 build_openssl x86_64-linux-android android-x86_64 x86_64
