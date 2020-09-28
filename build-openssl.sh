@@ -25,7 +25,7 @@ function build_openssl() {
     
     make clean
     
-    ./Configure ${CONF_TARGET} static \
+    ./Configure ${CONF_TARGET} no-shared \
     -D__ANDROID_API__=$MIN_SDK_VERSION \
     --prefix=${PRFIX_DIR} \
     ${DEBUG_PARAM}
@@ -37,13 +37,13 @@ function build_openssl() {
     make install_sw
     check_error
     
-    pushd ${PRFIX_DIR}/lib
-    cp libcrypto.so.1.1 libcrypto_1_1.so
-    check_error
+#    pushd ${PRFIX_DIR}/lib
+#    cp libcrypto.so.1.1 libcrypto_1_1.so
+#    check_error
     
-    cp libssl.so.1.1 libssl_1_1.so
-    check_error
-    popd
+#    cp libssl.so.1.1 libssl_1_1.so
+#    check_error
+#    popd
 }
 
 #***************************************************************************************
