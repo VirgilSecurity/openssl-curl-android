@@ -25,7 +25,7 @@ function build_openssl() {
     
     make clean
     
-    ./Configure ${CONF_TARGET} shared \
+    ./Configure ${CONF_TARGET} static \
     -D__ANDROID_API__=$MIN_SDK_VERSION \
     --prefix=${PRFIX_DIR} \
     ${DEBUG_PARAM}
