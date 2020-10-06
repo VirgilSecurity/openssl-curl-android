@@ -35,9 +35,9 @@ function build_curl() {
     # Prepare QT shared OpenSSL libs
     rm -rf ${PWD}/${BUILD_DIR}/openssl_lib
     mkdir -p ${PWD}/${BUILD_DIR}/openssl_lib
-    ln -s ${ANDROID_SDK}/android_openssl/latest/${OPENSSL_LIB_PREFIX}/libcrypto_1_1.so ${PWD}/${BUILD_DIR}/openssl_lib/libcrypto.so
-    ln -s ${ANDROID_SDK}/android_openssl/latest/${OPENSSL_LIB_PREFIX}/libssl_1_1.so    ${PWD}/${BUILD_DIR}/openssl_lib/libssl.so
-    export CPPFLAGS="-I${ANDROID_SDK}/android_openssl/static/include" 
+    ln -s ${ANDROID_SDK_ROOT}/android_openssl/latest/${OPENSSL_LIB_PREFIX}/libcrypto_1_1.so ${PWD}/${BUILD_DIR}/openssl_lib/libcrypto.so
+    ln -s ${ANDROID_SDK_ROOT}/android_openssl/latest/${OPENSSL_LIB_PREFIX}/libssl_1_1.so    ${PWD}/${BUILD_DIR}/openssl_lib/libssl.so
+    export CPPFLAGS="-I${ANDROID_SDK_ROOT}/android_openssl/static/include" 
     export LDFLAGS="-Wl,-L${PWD}/${BUILD_DIR}/openssl_lib/"
     
     # Prepare toolchain    
