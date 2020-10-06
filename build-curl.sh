@@ -98,7 +98,7 @@ function build_curl() {
     make install
     check_error
 
-    rm -rf ${PWD}/${BUILD_DIR}/openssl_lib
+#    rm -rf ${PWD}/${BUILD_DIR}/openssl_lib
 }
 
 #***************************************************************************************
