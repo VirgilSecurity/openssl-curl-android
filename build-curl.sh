@@ -15,7 +15,12 @@ source ${SCRIPT_FOLDER}/ish/error.ish
 function build_curl() {
     export TARGET_HOST=${1}
     local BUILD_DIR=${2}
-
+    local OPENSSL_LIB_PREFIX=${3}
+    
+    echo "##############################"
+    echo "### Current build directory [${BUILD_DIR}]"
+    echo "##############################"
+    
     local DEBUG_PARAM="--disable-debug"
     [ "${BUILD_TYPE}" == "debug" ] && DEBUG_PARAM="--enable-debug"
     
@@ -26,8 +31,17 @@ function build_curl() {
     fi
     
     local PRFIX_DIR=${INSTALL_DIR_BASE}/android.${BUILD_DIR}/${BUILD_TYPE}/installed/usr/local
-    local SSL_PRFIX_DIR=${ANDROID_SDK}/android_openssl/static
     
+    # Prepare QT shared OpenSSL libs
+    rm -rf ${PWD}/${BUILD_DIR}/openssl_lib
+    mkdir -p ${PWD}/${BUILD_DIR}/openssl_lib
+    ln -s ${ANDROID_SDK}/android_openssl/latest/${OPENSSL_LIB_PREFIX}/libcrypto_1_1.so ${PWD}/${BUILD_DIR}/openssl_lib/libcrypto.so
+    ln -s ${ANDROID_SDK}/android_openssl/latest/${OPENSSL_LIB_PREFIX}/libssl_1_1.so    ${PWD}/${BUILD_DIR}/openssl_lib/libssl.so
+    export CPPFLAGS="-I${ANDROID_SDK}/android_openssl/static/include" 
+    export LDFLAGS="-Wl,-L${PWD}/${BUILD_DIR}/openssl_lib/"
+    return 0
+    
+    # Prepare toolchain    
     export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/$HOST_TAG
     PATH=$TOOLCHAIN/bin:$PATH
     export AR=$TOOLCHAIN/bin/$TOOLS_PREFIX-ar
@@ -39,11 +53,12 @@ function build_curl() {
     export STRIP=$TOOLCHAIN/bin/$TOOLS_PREFIX-strip
     
     make clean
-    
+
     ./configure --host=$TARGET_HOST \
     --target=$TARGET_HOST \
     --prefix=${PRFIX_DIR} \
-    --with-ssl=${SSL_PRFIX_DIR} \
+    --with-ssl \
+    --disable-dependency-tracking \
     --with-ca-bundle=$CA_FILE \
     --disable-shared \
     --disable-verbose \
@@ -82,6 +97,8 @@ function build_curl() {
     
     make install
     check_error
+
+    rm -rf ${PWD}/${BUILD_DIR}/openssl_lib
 }
 
 #***************************************************************************************
@@ -103,19 +120,19 @@ pushd ${SCRIPT_FOLDER}/curl
 check_error
 
 # arm64
-build_curl aarch64-linux-android arm64-v8a
+build_curl aarch64-linux-android arm64-v8a arm64
 check_error
 
 # arm
-build_curl armv7a-linux-androideabi armeabi-v7a
+build_curl armv7a-linux-androideabi armeabi-v7a arm
 check_error
 
 # x86
-build_curl i686-linux-android x86
+build_curl i686-linux-android x86 x86
 check_error
 
 # x64
-build_curl x86_64-linux-android x86_64
+build_curl x86_64-linux-android x86_64 x86_64
 check_error
 
 popd

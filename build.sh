@@ -51,7 +51,7 @@ export MIN_SDK_VERSION=21
 export CFLAGS="-Os -ffunction-sections -fdata-sections -fno-unwind-tables -fno-asynchronous-unwind-tables"
 export LDFLAGS="-Wl,-s -Wl,-Bsymbolic -Wl,--gc-sections"
 
-chmod +x ./build-openssl.sh
+#chmod +x ./build-openssl.sh
 chmod +x ./build-curl.sh
 
 #
