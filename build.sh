@@ -57,15 +57,15 @@ chmod +x ./build-curl.sh
 #
 #   Build OpenSSL library
 #
-if [ "${BUILD_WITH_DEBUG}" == "true" ]; then
-   echo "===== Build OpenSSL with debug mode"
-   ${SCRIPT_FOLDER}/build-openssl.sh debug
-   check_error
-fi   
-
-echo "===== Build OpenSSL with release mode"
-${SCRIPT_FOLDER}/build-openssl.sh
-check_error
+#if [ "${BUILD_WITH_DEBUG}" == "true" ]; then
+#   echo "===== Build OpenSSL with debug mode"
+#   ${SCRIPT_FOLDER}/build-openssl.sh debug
+#   check_error
+#fi   
+#
+#echo "===== Build OpenSSL with release mode"
+#${SCRIPT_FOLDER}/build-openssl.sh
+#check_error
 
 #
 #   Build CURL library
