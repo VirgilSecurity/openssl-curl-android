@@ -39,7 +39,6 @@ function build_curl() {
     ln -s ${ANDROID_SDK}/android_openssl/latest/${OPENSSL_LIB_PREFIX}/libssl_1_1.so    ${PWD}/${BUILD_DIR}/openssl_lib/libssl.so
     export CPPFLAGS="-I${ANDROID_SDK}/android_openssl/static/include" 
     export LDFLAGS="-Wl,-L${PWD}/${BUILD_DIR}/openssl_lib/"
-    return 0
     
     # Prepare toolchain    
     export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/$HOST_TAG
