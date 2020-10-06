@@ -26,6 +26,7 @@ function build_curl() {
     fi
     
     local PRFIX_DIR=${INSTALL_DIR_BASE}/android.${BUILD_DIR}/${BUILD_TYPE}/installed/usr/local
+    local SSL_PRFIX_DIR=${ANDROID_SDK}/android_openssl/static
     
     export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/$HOST_TAG
     PATH=$TOOLCHAIN/bin:$PATH
@@ -42,7 +43,7 @@ function build_curl() {
     ./configure --host=$TARGET_HOST \
     --target=$TARGET_HOST \
     --prefix=${PRFIX_DIR} \
-    --with-ssl=${PRFIX_DIR} \
+    --with-ssl=${SSL_PRFIX_DIR} \
     --with-ca-bundle=$CA_FILE \
     --disable-shared \
     --disable-verbose \
